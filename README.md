@@ -11,4 +11,4 @@ TO DO :
 - Une fois des leds et une raspi récupérées, il faudra implémenter le fonctionnement de Band
 - Le système sera à tester sur une raspi, avec nottament une inquiétude au niveau des FPS
 - Il faudra ensuite implémenter le mapping de chaque show spécifiquement
-- Il faut aussi implémenter la vidéo
+- Il faut aussi implémenter la vidéo : https://www.youtube.com/watch?v=Xu8SLkvFq8I
