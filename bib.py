@@ -15,5 +15,6 @@ def changing_white_spot(screen,current_frame) :
     else :
         pygame.draw.circle(screen,(255,255,255),(size[0]/2,size[1]/2),100)
 
-
+def nothing(sceen,current_frame) :
+    pass
 

@@ -7,6 +7,7 @@ import pygame
 pygame.mixer.init(48000, -16, 1, 4096)
 pygame.font.init()
 #import rpi_ws281x as ws
+from pyvidplayer import Video
 
 import bib
 
@@ -30,6 +31,13 @@ class Show() :
         self.bg_color=bg_color
 
     def update_current_scene(self) :
+        if self.scenes[self.current_scene].video :
+            if self.current_frame==0 :
+                self.vid=Video(self.scenes[self.current_scene].video_path)
+                self.vid.set_size((1920,1080))
+            self.vid.draw(self.Screen,(0,0))
+
+
         if self.current_frame==0 and self.scenes[self.current_scene].music :
             self.current_music=pygame.mixer.Sound(self.scenes[self.current_scene].music_path)
             self.current_music.play()
@@ -115,12 +123,16 @@ class Scene() :
         self.loop=loop
         self.nb_of_frames=nb_of_frames
         self.frames=[]
+        self.music=False
+        self.video=False
     def fill(self,method) :
         self.frames=[method for x in range(self.nb_of_frames)]
     def set_music(self,path) :
         self.music=True
         self.music_path=path
-
+    def set_video(self,path) :
+        self.video=True
+        self.video_path=path
 
 if __name__=="__main__" :
 
@@ -130,9 +142,14 @@ if __name__=="__main__" :
                        
     my_second_scene=Scene("white projector looping",1,True)
     my_second_scene.fill(bib.white_spot)
+
+    third=Scene("Video Implementation",5930)
+    third.fill(bib.nothing)
+    third.set_video("assets/leo.mp4")
                          
     my_show=Show("default")
     my_show.load_scene(my_scene)
     my_show.load_scene(my_second_scene)
+    my_show.load_scene(third)
                        
     my_show.start()
