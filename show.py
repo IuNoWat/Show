@@ -15,7 +15,7 @@ class Show() :
     def __init__(self,name,bg_color=pygame.Color("Black"),fps=30) :
         #Pygame core
         self.on=True
-        self.Screen=pygame.display.set_mode((1920,1080))
+        self.Screen=pygame.display.set_mode((1920,1080),pygame.FULLSCREEN)
         self.Clock=pygame.time.Clock()
         #core
         self.show_name=name
@@ -25,6 +25,7 @@ class Show() :
         self.currently_playing=False
         self.show_debug=True
         self.current_music=False
+        self.current_vid=False
         #Scene player
         self.current_frame=0
         #Style
@@ -35,8 +36,9 @@ class Show() :
             if self.current_frame==0 :
                 self.vid=Video(self.scenes[self.current_scene].video_path)
                 self.vid.set_size((1920,1080))
-            self.vid.draw(self.Screen,(0,0))
-
+                self.vid.set_volume(1.0)
+            else :
+                self.vid.draw(self.Screen,(0,0))
 
         if self.current_frame==0 and self.scenes[self.current_scene].music :
             self.current_music=pygame.mixer.Sound(self.scenes[self.current_scene].music_path)
@@ -53,15 +55,16 @@ class Show() :
                 self.currently_playing=False
                 if self.scenes[self.current_scene].music :
                     self.current_music.stop()
-
-    def restart_current_scene(self) :
-        self.current_frame=0
-        self.current_music.stop()
+                    self.current_music=False
 
     def stop_current_scene(self) :
         self.currently_playing=False
         self.current_frame=0
-        self.current_music.stop()
+        if self.current_music!=False :
+            self.current_music.stop()
+            self.current_music=False
+        if self.scenes[self.current_scene].video :
+            self.vid.set_volume(0)
 
     def load_scene(self,scene) :
         self.scenes.append(scene)
@@ -82,27 +85,35 @@ class Show() :
                 #Commands always on
                 if event.type == pygame.QUIT:
                     self.on=False
-                if keys[pygame.K_p] :
+
+                if keys[pygame.K_ESCAPE] : # ECHAP : Quitter
                     self.on=False
-                if keys[pygame.K_w] :
+
+                if keys[pygame.K_w] : # W : Monter Debug
                     self.show_debug = True
-                if keys[pygame.K_x] :
+
+                if keys[pygame.K_x] : # X : Cacher Debug
                     self.show_debug = False
+                
+                if keys[pygame.K_p] : # P : Lancer Scène
+                    self.currently_playing=True
+
+                if keys[pygame.K_m] : # M : Arréter Scène
+                    self.stop_current_scene()
 
                 #Commands unavailable in play mode
                 if self.currently_playing==False :
-                    if keys[pygame.K_RIGHT]:
+                    if keys[pygame.K_RIGHT]: # Fleche Droite : Scène Suivante
                         if self.current_scene==len(self.scenes)-1 :
                             self.current_scene=0
                         else :
                             self.current_scene+=1
-                    if keys[pygame.K_LEFT]:
+                    if keys[pygame.K_LEFT]: #Fleche Gauche : Scène Précédente
                         if self.current_scene==0 :
                             self.current_scene=len(self.scenes)-1
                         else :
                             self.current_scene-=1
-                    if keys[pygame.K_SPACE]:
-                        self.currently_playing=True
+                    
 
             if self.currently_playing :
                 self.update_current_scene()
@@ -136,20 +147,42 @@ class Scene() :
 
 if __name__=="__main__" :
 
-    my_scene=Scene("white projector for 100 frames",1000)
-    my_scene.fill(bib.changing_white_spot)
-    my_scene.set_music("C:\\Users\\loren\\Desktop\\Show\\assets\\infidele.mp3")
-                       
-    my_second_scene=Scene("white projector looping",1,True)
-    my_second_scene.fill(bib.white_spot)
+    one=Scene("Accueil Musical",1,True)
+    one.fill(bib.interlude_musicale_spot)
+    #my_scene.set_music("C:\\Users\\loren\\Desktop\\Show\\assets\\infidele.mp3")
 
-    third=Scene("Video Implementation",5930)
+    two=Scene("Grand Jeu de Laury",1,True)
+    two.fill(bib.nothing)
+
+    third=Scene("La Java des Bombes Atomiques",4950)
     third.fill(bib.nothing)
-    third.set_video("assets/leo.mp4")
+    third.set_video("C:/Users/lorenzo.jacques/Desktop/lorenshow/java.mp4")
+
+    fourth=Scene("Court-Métrage Léo",1020)           
+    fourth.fill(bib.nothing)
+    fourth.set_video("C:/Users/lorenzo.jacques/Desktop/lorenshow/leo.mp4")
+
+    fifth=Scene("Lypsinc Dariane",6270)
+    fifth.fill(bib.bi_spot)
+    fifth.set_music("C:/Users/lorenzo.jacques/Desktop/lorenshow/dariane.mp3")
+
+    sixth=Scene("Poeme",1,True)
+    sixth.fill(bib.white_spot)
+
+    seventh=Scene("Interlude Musical",1,True)
+    seventh.fill(bib.interlude_musicale_spot)
+
+    eigth=Scene("DJ Set",1,True)
+    eigth.fill(bib.white_spot)
                          
     my_show=Show("default")
-    my_show.load_scene(my_scene)
-    my_show.load_scene(my_second_scene)
+    my_show.load_scene(one)
+    my_show.load_scene(two)
     my_show.load_scene(third)
+    my_show.load_scene(fourth)
+    my_show.load_scene(fifth)
+    my_show.load_scene(sixth)
+    my_show.load_scene(seventh)
+    my_show.load_scene(eigth)
                        
     my_show.start()
